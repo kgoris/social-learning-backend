@@ -21,6 +21,7 @@ public class Access {
 
     @ManyToOne
     private Questionnaire questionnaire;
+    @Enumerated(EnumType.STRING)
     private AccessType accessType;
     @ManyToOne
     private StudentGroup studentGroup;

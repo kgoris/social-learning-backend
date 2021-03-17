@@ -21,6 +21,7 @@ public class Question {
     private Integer id;
 
     private String title;
+    @Enumerated(EnumType.STRING)
     private QuestionType type;
     private Integer sequenceNumber;
     @ManyToOne

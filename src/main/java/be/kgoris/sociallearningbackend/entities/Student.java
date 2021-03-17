@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity(name="STUDENT")
-@Table
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"email"}))
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

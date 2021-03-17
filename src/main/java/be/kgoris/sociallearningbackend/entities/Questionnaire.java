@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity(name="QUESTIONNAIRE")
-@Table
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"code"}))
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,6 +22,7 @@ public class Questionnaire {
 
     private Integer levelSequence;
     private String title;
+    private String code;
 
     @OneToMany(mappedBy = "questionnaire", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions;

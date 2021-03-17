@@ -22,4 +22,6 @@ public class Proposition {
 
     @ManyToOne
     private Question question;
+    @ManyToOne
+    private OfficialAnswer officialAnswer;
 }

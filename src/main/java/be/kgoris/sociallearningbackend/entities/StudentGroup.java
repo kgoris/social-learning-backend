@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity(name="STUDENT_GROUP")
-@Table
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"code"}))
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
