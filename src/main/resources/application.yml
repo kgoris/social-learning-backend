@@ -1,0 +1,33 @@
+KEYCLOAK_SERVER_URL: 'http://localhost:8080/auth'
+KEYCLOAK_REALM: 'keycloak-auth'
+KEYCLOAK_USER_MANAGER_CLIENT_ID: 'onss_user_manager'
+KEYCLOAK_USER_MANAGER_CLIENT_SECRET: 'e85f2006-3390-40d3-a6bb-001e0872a958'
+FILE_STORAGE_PATH: "./files"
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+    initialize: false
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  main:
+    allow-bean-definition-overriding: true
+
+keycloak:
+  auth-server-url: ${KEYCLOAK_SERVER_URL}
+  realm: ${KEYCLOAK_REALM}
+  bearer-only: true
+  resource: onss_be
+  ssl-required: external
+  cors: true
+  credentials:
+    secret: ecf0bcd2-528a-4620-a59a-19df24a131c6
+
+server:
+  port: 9080

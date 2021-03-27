@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity(name="OFFICIAL_ANSWER")
 @Table
@@ -19,7 +20,8 @@ public class OfficialAnswer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    private Proposition proposition;
+    @OneToMany(mappedBy = "officialAnswer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Proposition> propositions;
     private String value;
+
 }

@@ -1,6 +1,5 @@
 package be.kgoris.sociallearningbackend.dto;
 
-
 import be.kgoris.sociallearningbackend.entities.Student;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,13 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StudentDto {
+public class StudentQuestionDto {
     private Integer id;
-    private String firstName;
-    private String name;
-    private String email;
-    private String password;
-    private StudentGroupDto studentGroup;
-    private StudentQuestionDto studentQuestionDto;
-    private StudentDto studentObserved;
+    private AnswerDto answerDto;
+    private StudentDto studentDto;
 }

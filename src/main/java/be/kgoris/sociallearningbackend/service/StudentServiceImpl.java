@@ -21,7 +21,7 @@ public class StudentServiceImpl implements StudentService {
     public List<StudentDto> getAllStudents() {
         List<Student> students = studentDao.findAll();
         return students.stream()
-                .map(studentMapper::fromStudentToUserDto)
+                .map(studentMapper::fromModelToDto)
                 .collect(Collectors.toList());
     }
 }
