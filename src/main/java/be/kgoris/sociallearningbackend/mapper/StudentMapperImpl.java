@@ -20,6 +20,7 @@ public class StudentMapperImpl implements StudentMapper {
     @Override
     public Student fromDtoToModel(StudentDto studentDto) {
         return Student.builder()
+                .id(studentDto.getId())
                 .email(studentDto.getEmail())
                 .firstName(studentDto.getFirstName())
                 .name(studentDto.getName())

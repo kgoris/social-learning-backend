@@ -9,7 +9,5 @@ import be.kgoris.sociallearningbackend.entities.Student;
 import java.util.List;
 
 public interface QuestionnaireService {
-    List<QuestionnaireDto> getWorkQuestionnairesDtoByStudent(StudentDto studentDto);
-    List<QuestionnaireDto> getObserveQuestionnairesDtoByStudent(StudentDto studentDto);
-    List<Questionnaire> getQuestionnairesByStudentAndAccessType(Student student, AccessType accessType);
+    List<QuestionnaireDto> getQuestionnairesByStudentAndAccessType(StudentDto studentDto, AccessType accessType);
 }

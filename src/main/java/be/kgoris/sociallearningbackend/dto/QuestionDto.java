@@ -19,4 +19,5 @@ public class QuestionDto {
     private Integer sequenceNumber;
     private OfficialAnswerDto officialAnswer;
     private List<PropositionDto> propositions;
+    private Integer questionnaireId;
 }

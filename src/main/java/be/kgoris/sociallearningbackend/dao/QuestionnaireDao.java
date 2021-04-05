@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface QuestionnaireDao extends JpaRepository<Questionnaire, Integer> {
 
-    @Query("SELECT q FROM STUDENT s join s.group g join g.accesses a join a.questionnaire q where a.accessType = ?1")
-    List<Questionnaire> findAllByStudentAndAccessType(Student student, AccessType accessType);
+    @Query("SELECT q FROM STUDENT s join s.group g join g.accesses a join a.questionnaire q where a.accessType = ?2 and s.email = ?1")
+    List<Questionnaire> findAllByStudentAndAccessType(String login, AccessType accessType);
 }

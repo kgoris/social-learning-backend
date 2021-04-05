@@ -18,7 +18,9 @@ spring:
     show-sql: true
   main:
     allow-bean-definition-overriding: true
-
+security:
+  basic:
+    enable: false
 keycloak:
   auth-server-url: ${KEYCLOAK_SERVER_URL}
   realm: ${KEYCLOAK_REALM}

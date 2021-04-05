@@ -1,6 +1,7 @@
 package be.kgoris.sociallearningbackend.controller;
 
 import be.kgoris.sociallearningbackend.dto.StudentDto;
+import be.kgoris.sociallearningbackend.entities.Questionnaire;
 import be.kgoris.sociallearningbackend.entities.Student;
 import be.kgoris.sociallearningbackend.service.StudentService;
 import lombok.AllArgsConstructor;
@@ -25,4 +26,5 @@ public class StudentController {
     public List<StudentDto> all(){
         return studentService.getAllStudents();
     }
+
 }
