@@ -13,7 +13,7 @@ public class StudentDto {
     private Integer id;
     private String firstName;
     private String name;
-    private String email;
+    private String username;
     private String password;
     private StudentGroupDto studentGroup;
     private StudentQuestionDto studentQuestionDto;

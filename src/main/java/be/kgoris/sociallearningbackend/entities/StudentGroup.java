@@ -1,16 +1,16 @@
 package be.kgoris.sociallearningbackend.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity(name="STUDENT_GROUP")
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"code"}))
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -21,9 +21,23 @@ public class StudentGroup {
     private String name;
     private String code;
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Student> students;
 
-    @OneToMany(mappedBy = "studentGroup", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Access> accesses;
+
+    @OneToMany(mappedBy = "studentGroup", fetch = FetchType.EAGER, orphanRemoval = true)
+    Set<Access> accesses;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StudentGroup that = (StudentGroup) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(code, that.code);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, code);
+    }
 }

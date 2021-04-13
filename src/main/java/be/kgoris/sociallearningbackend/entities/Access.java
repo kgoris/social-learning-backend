@@ -23,6 +23,6 @@ public class Access {
     private Questionnaire questionnaire;
     @Enumerated(EnumType.STRING)
     private AccessType accessType;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private StudentGroup studentGroup;
 }

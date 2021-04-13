@@ -12,7 +12,7 @@ public class StudentMapperImpl implements StudentMapper {
                 .id(student.getId())
                 .firstName(student.getFirstName())
                 .name(student.getName())
-                .email(student.getEmail())
+                .username(student.getUsername())
                 .password(student.getPassword())
                 .build();
     }
@@ -21,7 +21,7 @@ public class StudentMapperImpl implements StudentMapper {
     public Student fromDtoToModel(StudentDto studentDto) {
         return Student.builder()
                 .id(studentDto.getId())
-                .email(studentDto.getEmail())
+                .username(studentDto.getUsername())
                 .firstName(studentDto.getFirstName())
                 .name(studentDto.getName())
                 .password(studentDto.getPassword())

@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface QuestionnaireDao extends JpaRepository<Questionnaire, Integer> {
+public interface QuestionnaireRepository extends JpaRepository<Questionnaire, Integer> {
 
-    @Query("SELECT q FROM STUDENT s join s.group g join g.accesses a join a.questionnaire q where a.accessType = ?2 and s.email = ?1")
+    @Query("SELECT q FROM STUDENT s join s.group g join g.accesses a join a.questionnaire q where a.accessType = ?2 and s.username = ?1")
     List<Questionnaire> findAllByStudentAndAccessType(String login, AccessType accessType);
 }
