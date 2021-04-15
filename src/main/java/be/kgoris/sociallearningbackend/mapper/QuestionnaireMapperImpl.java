@@ -15,17 +15,20 @@ public class QuestionnaireMapperImpl implements QuestionnaireMapper {
 
     @Override
     public QuestionnaireDto fromModelToDto(Questionnaire questionnaire) {
-        return QuestionnaireDto.builder()
+        QuestionnaireDto questionnaireDto = QuestionnaireDto.builder()
                 .id(questionnaire.getId())
                 .levelSequence(questionnaire.getLevelSequence())
                 .code(questionnaire.getCode())
                 .title(questionnaire.getTitle())
-                .questions(questionnaire.getQuestions()
-                                            .stream()
-                                            .map(questionMapper::fromModelToDto)
-                                            .collect(Collectors.toList()))
+                .questionCount(questionnaire.getQuestions().size())
                 .build();
-
+        if(!questionnaire.getQuestions().isEmpty()){
+            questionnaireDto.setQuestions(questionnaire.getQuestions()
+                    .stream()
+                    .map(questionMapper::fromModelToDto)
+                    .collect(Collectors.toList()));
+        }
+        return questionnaireDto;
     }
 
     @Override

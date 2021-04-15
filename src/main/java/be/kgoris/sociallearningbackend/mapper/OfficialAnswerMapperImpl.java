@@ -23,10 +23,12 @@ public class OfficialAnswerMapperImpl implements OfficialAnswerMapper {
         return OfficialAnswerDto.builder()
                 .id(officialAnswer.getId())
                 .value(officialAnswer.getValue())
-                .propositionDtos(officialAnswer.getPropositions()
+                .propositionDtos(officialAnswer.getPropositions() != null
+                        ? officialAnswer.getPropositions()
                                                     .stream()
                                                     .map(propositionMapper::fromModelToDto)
-                                                    .collect(Collectors.toList()))
+                                                    .collect(Collectors.toList())
+                        : null)
                 .build();
     }
 }

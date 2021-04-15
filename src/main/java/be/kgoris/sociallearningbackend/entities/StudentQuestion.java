@@ -23,4 +23,6 @@ public class StudentQuestion {
 
     @ManyToOne
     private Student student;
+
+    @ManyToOne Question question;
 }

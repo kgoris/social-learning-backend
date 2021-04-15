@@ -16,5 +16,6 @@ public class QuestionnaireDto  {
     private Integer levelSequence;
     private String title;
     private String code;
+    private Integer questionCount;
     private List<QuestionDto> questions;
 }

@@ -24,6 +24,7 @@ public class Questionnaire {
     private String title;
     private String code;
 
+
     @OneToMany(mappedBy = "questionnaire", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions;
 }

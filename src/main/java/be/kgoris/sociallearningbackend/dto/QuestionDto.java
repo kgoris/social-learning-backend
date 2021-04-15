@@ -1,6 +1,7 @@
 package be.kgoris.sociallearningbackend.dto;
 
 import be.kgoris.sociallearningbackend.allenum.QuestionType;
+import be.kgoris.sociallearningbackend.entities.Questionnaire;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,4 +21,5 @@ public class QuestionDto {
     private OfficialAnswerDto officialAnswer;
     private List<PropositionDto> propositions;
     private Integer questionnaireId;
+    private QuestionnaireDto questionnaire;
 }

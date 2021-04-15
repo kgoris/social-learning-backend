@@ -1,21 +1,17 @@
 package be.kgoris.sociallearningbackend.controller;
 
-import be.kgoris.sociallearningbackend.allenum.AccessType;
 import be.kgoris.sociallearningbackend.dto.QuestionnaireDto;
 import be.kgoris.sociallearningbackend.dto.QuestionnaireQueryDto;
 import be.kgoris.sociallearningbackend.service.QuestionnaireService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/questionnaires")
+@RequestMapping(path = "/api/questionnaires")
 @AllArgsConstructor
 public class QuestionnaireController {
     private static final Logger LOGGER = LoggerFactory.getLogger(StudentController.class);
@@ -27,5 +23,11 @@ public class QuestionnaireController {
         LOGGER.info("findQuestionnairesByStudentAndAccessType");
         return questionnaireService.getQuestionnairesByStudentAndAccessType(query.getStudentDto(),
                 query.getAccessType());
+    }
+
+    @GetMapping("{id}")
+    public QuestionnaireDto findById(@PathVariable("id") Integer id){
+        LOGGER.info("find by id " + id);
+        return questionnaireService.findById(id);
     }
 }

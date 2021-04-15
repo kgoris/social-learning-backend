@@ -1,7 +1,9 @@
 package be.kgoris.sociallearningbackend.mapper;
 
 import be.kgoris.sociallearningbackend.dto.QuestionDto;
+import be.kgoris.sociallearningbackend.dto.QuestionnaireDto;
 import be.kgoris.sociallearningbackend.entities.Question;
+import be.kgoris.sociallearningbackend.entities.Questionnaire;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,15 +24,28 @@ public class QuestionMapperImpl implements QuestionMapper {
     public QuestionDto fromModelToDto(Question question) {
         return QuestionDto.builder()
                 .id(question.getId())
-                .officialAnswer(officialAnswerMapper.fromModelToDto(question.getOfficialAnswer()))
-                .propositions(question.getPropositions()
+                .officialAnswer(question.getOfficialAnswer() != null
+                        ? officialAnswerMapper.fromModelToDto(question.getOfficialAnswer())
+                        : null)
+                .propositions(question.getPropositions() != null
+                        ? question.getPropositions()
                                         .stream()
                                         .map(propositionMapper::fromModelToDto)
-                                        .collect(Collectors.toList()))
-                .questionnaireId(question.getQuestionnaire().getId())
+                                        .collect(Collectors.toList())
+                        : null)
+                .questionnaireId(question.getQuestionnaire() != null
+                        ? question.getQuestionnaire().getId()
+                        : null)
                 .sequenceNumber(question.getSequenceNumber())
                 .title(question.getTitle())
                 .type(question.getType())
                 .build();
+    }
+
+    @Override
+    public QuestionDto fromModelToDto(Question question, QuestionnaireDto questionnaireDto) {
+        QuestionDto questionDto = this.fromModelToDto(question);
+        questionDto.setQuestionnaire(questionnaireDto);
+        return questionDto;
     }
 }

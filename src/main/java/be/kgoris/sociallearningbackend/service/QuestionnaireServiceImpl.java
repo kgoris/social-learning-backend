@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,4 +29,11 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
         List<Questionnaire> questionnaires = questionnaireRepository.findAllByStudentAndAccessType(student.getUsername(), accessType);
         return questionnaires.stream().map(questionnaireMapper::fromModelToDto).collect(Collectors.toList());
     }
+
+    @Override
+    public QuestionnaireDto findById(Integer id) {
+        Optional<Questionnaire> questionnaire = questionnaireRepository.findById(id);
+        return questionnaire.map(questionnaireMapper::fromModelToDto).orElse(null);
+    }
+
 }
