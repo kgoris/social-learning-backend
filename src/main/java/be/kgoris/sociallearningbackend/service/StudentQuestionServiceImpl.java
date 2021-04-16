@@ -6,6 +6,7 @@ import be.kgoris.sociallearningbackend.dao.StudentRepository;
 import be.kgoris.sociallearningbackend.dto.QuestionnaireDto;
 import be.kgoris.sociallearningbackend.dto.StudentDto;
 import be.kgoris.sociallearningbackend.dto.StudentQuestionDto;
+import be.kgoris.sociallearningbackend.entities.Question;
 import be.kgoris.sociallearningbackend.entities.Questionnaire;
 import be.kgoris.sociallearningbackend.entities.Student;
 import be.kgoris.sociallearningbackend.entities.StudentQuestion;
@@ -16,8 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,13 +33,39 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
 
     @Override
     public List<StudentQuestionDto> findByStudent(StudentDto studentDto) {
+        Map<Questionnaire, List<StudentQuestion>> studentQuestionsMap = new HashMap<>();
         List<StudentQuestion> studentQuestions = studentQuestionRepository.findAllByStudent(
                                                                             studentMapper.fromDtoToModel(studentDto));
+        //go through all the student question and separate them by questionnaire
+        for(StudentQuestion studentQuestion : studentQuestions){
+            List<StudentQuestion> stList = studentQuestionsMap.get(studentQuestion.getQuestion().getQuestionnaire());
+            if(stList == null){
+                studentQuestionsMap.put(studentQuestion.getQuestion().getQuestionnaire(), new ArrayList<>());
+                stList = studentQuestionsMap.get(studentQuestion.getQuestion().getQuestionnaire());
+            }
+            stList.add(studentQuestion);
+            //sort the student question list by question sequence number
+            if(stList.size()>1){
+                stList.sort(new Comparator<StudentQuestion>() {
+                        @Override
+                        public int compare(StudentQuestion x, StudentQuestion y) {
+                            return x.getQuestion().getSequenceNumber().compareTo(y.getQuestion().getSequenceNumber());
+                        }
+                    });
+                }
+            }
+
+        //for each questionnaire, get the last student question, it will become the "current" one
+        List<StudentQuestion> finalStudentQuestions = new ArrayList<>();
+        for (Map.Entry<Questionnaire, List<StudentQuestion>> pair : studentQuestionsMap.entrySet()) {
+            finalStudentQuestions.add(pair.getValue().get(pair.getValue().size() - 1));
+        }
+
         if(!CollectionUtils.isEmpty(studentQuestions)){
             return studentQuestions.stream()
-                                    .map(studentQuestion -> {
-                                        StudentQuestionDto studentQuestionDto = studentQuestionMapper.fromModelToDto(studentQuestion);
-                                        this.fillInStudentQuestionDtoWithQuestionnaireDto(studentQuestionDto, studentQuestion.getQuestion().getQuestionnaire());
+                                    .map(sq -> {
+                                        StudentQuestionDto studentQuestionDto = studentQuestionMapper.fromModelToDto(sq);
+                                        this.fillInStudentQuestionDtoWithQuestionnaireDto(studentQuestionDto, sq.getQuestion().getQuestionnaire());
                                         return studentQuestionDto;
                                     })
                                     .collect(Collectors.toList());
@@ -78,6 +104,50 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
         studentQuestion = studentQuestionRepository.save(studentQuestion);
         StudentQuestionDto studentQuestionDto = studentQuestionMapper.fromModelToDto(studentQuestion);
         fillInStudentQuestionDtoWithQuestionnaireDto(studentQuestionDto, questionnaire);
+        return studentQuestionDto;
+    }
+
+    private Question getNextQuestion(StudentQuestion studentQuestion){
+        return  studentQuestion.getQuestion()
+                .getQuestionnaire()
+                .getQuestions().get(studentQuestion.getQuestion().getSequenceNumber());
+    }
+
+    private Question getPreviousQuestion(StudentQuestion studentQuestion){
+        return  studentQuestion.getQuestion()
+                .getQuestionnaire()
+                .getQuestions().get(studentQuestion.getQuestion().getSequenceNumber()-2);
+    }
+    @Override
+    public StudentQuestionDto next(StudentQuestionDto studentQuestionDto) {
+        StudentQuestion studentQuestion = studentQuestionMapper.fromDtoToModel(studentQuestionDto);
+        studentQuestion = studentQuestionRepository.save(studentQuestion);
+        if(studentQuestion.getQuestion().getSequenceNumber() < studentQuestion.getQuestion().getQuestionnaire().getQuestions().size()){
+            Question nextQuestion = getNextQuestion(studentQuestion);
+            StudentQuestion nextStudentQuestion = StudentQuestion.builder()
+                    .question(nextQuestion)
+                    .student(studentQuestion.getStudent())
+                    .build();
+            nextStudentQuestion = studentQuestionRepository.save(nextStudentQuestion);
+            return studentQuestionMapper.fromModelToDto(nextStudentQuestion);
+        }
+        return studentQuestionDto;
+    }
+
+    @Override
+    public StudentQuestionDto previous(StudentQuestionDto studentQuestionDto) {
+        StudentQuestion studentQuestion = studentQuestionMapper.fromDtoToModel(studentQuestionDto);
+        studentQuestion = studentQuestionRepository.save(studentQuestion);
+        if(studentQuestion.getQuestion().getSequenceNumber() > 1){
+            Question previousQuestion = getPreviousQuestion(studentQuestion);
+            studentQuestionRepository.findStudentQuestionByQuestion(previousQuestion);
+            StudentQuestion nextStudentQuestion = StudentQuestion.builder()
+                    .question(previousQuestion)
+                    .student(studentQuestion.getStudent())
+                    .build();
+            nextStudentQuestion = studentQuestionRepository.save(nextStudentQuestion);
+            return studentQuestionMapper.fromModelToDto(nextStudentQuestion);
+        }
         return studentQuestionDto;
     }
 }

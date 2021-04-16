@@ -11,4 +11,6 @@ public interface StudentQuestionService {
     List<StudentQuestionDto> findByStudent(StudentDto studentDto);
     StudentQuestionDto findById(Integer id);
     StudentQuestionDto createByQuestionnaireIdAndStudentDto(Integer questionnaireId, StudentDto studentDto);
+    StudentQuestionDto next(StudentQuestionDto studentQuestionDto);
+    StudentQuestionDto previous(StudentQuestionDto studentQuestionDto);
 }

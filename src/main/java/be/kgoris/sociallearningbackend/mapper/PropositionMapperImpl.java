@@ -10,7 +10,10 @@ import org.springframework.stereotype.Service;
 public class PropositionMapperImpl implements PropositionMapper {
     @Override
     public Proposition fromDtoToModel(PropositionDto propositionDto) {
-        return null;
+        return Proposition.builder()
+                .id(propositionDto.getId())
+                .
+                .build();
     }
 
     @Override

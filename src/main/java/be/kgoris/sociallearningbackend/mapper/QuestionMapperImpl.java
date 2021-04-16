@@ -2,6 +2,7 @@ package be.kgoris.sociallearningbackend.mapper;
 
 import be.kgoris.sociallearningbackend.dto.QuestionDto;
 import be.kgoris.sociallearningbackend.dto.QuestionnaireDto;
+import be.kgoris.sociallearningbackend.entities.OfficialAnswer;
 import be.kgoris.sociallearningbackend.entities.Question;
 import be.kgoris.sociallearningbackend.entities.Questionnaire;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,10 @@ public class QuestionMapperImpl implements QuestionMapper {
 
     @Override
     public Question fromDtoToModel(QuestionDto questionDto) {
-        return null;
+        return Question.builder()
+                .id(questionDto.getId())
+                .officialAnswer(questionDto.getOfficialAnswer() != null ?)
+                .build();
     }
 
     @Override

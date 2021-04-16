@@ -30,4 +30,16 @@ public class StudentQuestionController {
                                              @RequestBody StudentDto studentDto){
         return studentQuestionService.createByQuestionnaireIdAndStudentDto(questionnaireId, studentDto);
     }
+
+    @PostMapping("/next")
+    StudentQuestionDto next(@RequestBody StudentQuestionDto studentQuestionDto){
+        return studentQuestionService.next(studentQuestionDto);
+    }
+
+    @PostMapping("/previous")
+    StudentQuestionDto previous(@RequestBody StudentQuestionDto studentQuestionDto){
+        return studentQuestionService.previous(studentQuestionDto);
+    }
+
+
 }

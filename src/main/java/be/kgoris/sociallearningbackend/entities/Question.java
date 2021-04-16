@@ -26,7 +26,7 @@ public class Question {
     private Integer sequenceNumber;
     @ManyToOne
     private Questionnaire questionnaire;
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.ALL)
     private OfficialAnswer officialAnswer;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
