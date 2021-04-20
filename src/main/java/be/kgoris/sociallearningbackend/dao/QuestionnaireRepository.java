@@ -1,6 +1,7 @@
 package be.kgoris.sociallearningbackend.dao;
 
 import be.kgoris.sociallearningbackend.allenum.AccessType;
+import be.kgoris.sociallearningbackend.entities.Question;
 import be.kgoris.sociallearningbackend.entities.Questionnaire;
 import be.kgoris.sociallearningbackend.entities.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +13,6 @@ public interface QuestionnaireRepository extends JpaRepository<Questionnaire, In
 
     @Query("SELECT q FROM STUDENT s join s.group g join g.accesses a join a.questionnaire q where a.accessType = ?2 and s.username = ?1")
     List<Questionnaire> findAllByStudentAndAccessType(String login, AccessType accessType);
+    @Query("SELECT DISTINCT q FROM QUESTION qu join qu.questionnaire q where qu.id = ?1")
+    Questionnaire findByQuestionId(Integer id);
 }

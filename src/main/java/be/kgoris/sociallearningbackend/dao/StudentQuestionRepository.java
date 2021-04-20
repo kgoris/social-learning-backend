@@ -10,5 +10,5 @@ import java.util.List;
 
 public interface StudentQuestionRepository extends JpaRepository<StudentQuestion, Integer> {
     List<StudentQuestion> findAllByStudent(Student student);
-    StudentQuestion findStudentQuestionByQuestion(Question question);
+    StudentQuestion findStudentQuestionByQuestionAndStudent(Question question, Student student);
 }

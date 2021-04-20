@@ -12,7 +12,6 @@ public class PropositionMapperImpl implements PropositionMapper {
     public Proposition fromDtoToModel(PropositionDto propositionDto) {
         return Proposition.builder()
                 .id(propositionDto.getId())
-                .
                 .build();
     }
 

@@ -6,6 +6,7 @@ import be.kgoris.sociallearningbackend.entities.OfficialAnswer;
 import be.kgoris.sociallearningbackend.entities.Question;
 import be.kgoris.sociallearningbackend.entities.Questionnaire;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
@@ -18,10 +19,27 @@ public class QuestionMapperImpl implements QuestionMapper {
 
     @Override
     public Question fromDtoToModel(QuestionDto questionDto) {
-        return Question.builder()
+        Question question = Question.builder()
                 .id(questionDto.getId())
-                .officialAnswer(questionDto.getOfficialAnswer() != null ?)
+                .officialAnswer(questionDto.getOfficialAnswer() != null
+                        ? officialAnswerMapper.fromDtoToModel(questionDto.getOfficialAnswer())
+                        : null)
+                .propositions(!CollectionUtils.isEmpty(questionDto.getPropositions())
+                        ? questionDto.getPropositions().stream()
+                                                        .map(propositionMapper::fromDtoToModel)
+                                                        .collect(Collectors.toList())
+                        : null)
+                .sequenceNumber(questionDto.getSequenceNumber())
+                .title(questionDto.getTitle())
+                .type(questionDto.getType())
                 .build();
+        if(CollectionUtils.isNotEmpty(question.getPropositions())) {
+            question.getPropositions().forEach(proposition -> {
+                proposition.setQuestion(question);
+                proposition.setOfficialAnswer(question.getOfficialAnswer());
+            });
+        }
+        return question;
     }
 
     @Override

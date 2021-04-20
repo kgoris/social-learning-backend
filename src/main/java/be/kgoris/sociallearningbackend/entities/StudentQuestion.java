@@ -18,11 +18,11 @@ public class StudentQuestion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.ALL})
     private Answer answer;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne
     private Student student;
 
-    @ManyToOne(cascade=CascadeType.ALL) Question question;
+    @ManyToOne private Question question;
 }

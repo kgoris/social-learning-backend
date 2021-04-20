@@ -15,7 +15,16 @@ public class OfficialAnswerMapperImpl implements OfficialAnswerMapper {
 
     @Override
     public OfficialAnswer fromDtoToModel(OfficialAnswerDto officialAnswerDto) {
-        return null;
+        return OfficialAnswer.builder()
+                .id(officialAnswerDto.getId())
+                .propositions(!officialAnswerDto.getPropositionDtos().isEmpty()
+                        ? officialAnswerDto.getPropositionDtos()
+                                .stream()
+                                .map(propositionMapper::fromDtoToModel)
+                                .collect(Collectors.toList())
+                        : null)
+                .value(officialAnswerDto.getValue())
+                .build();
     }
 
     @Override

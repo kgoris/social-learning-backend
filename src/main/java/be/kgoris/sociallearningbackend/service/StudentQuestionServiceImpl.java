@@ -63,16 +63,16 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
 
         if(!CollectionUtils.isEmpty(studentQuestions)){
             return studentQuestions.stream()
-                                    .map(sq -> {
-                                        StudentQuestionDto studentQuestionDto = studentQuestionMapper.fromModelToDto(sq);
-                                        this.fillInStudentQuestionDtoWithQuestionnaireDto(studentQuestionDto, sq.getQuestion().getQuestionnaire());
-                                        return studentQuestionDto;
-                                    })
+                                    .map(this::mapStudentQuestionToStudentQuestionDto)
                                     .collect(Collectors.toList());
         }
         return null;
     }
-
+    private StudentQuestionDto mapStudentQuestionToStudentQuestionDto(StudentQuestion studentQuestion){
+        StudentQuestionDto studentQuestionDto = studentQuestionMapper.fromModelToDto(studentQuestion);
+        this.fillInStudentQuestionDtoWithQuestionnaireDto(studentQuestionDto, studentQuestion.getQuestion().getQuestionnaire());
+        return studentQuestionDto;
+    }
     private void fillInStudentQuestionDtoWithQuestionnaireDto(StudentQuestionDto studentQuestionDto, Questionnaire questionnaire){
         QuestionnaireDto questionnaireDto = questionnaireMapper.fromModelToDto(questionnaire);
         studentQuestionDto.setQuestionnaire(questionnaireDto);
@@ -108,19 +108,31 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
     }
 
     private Question getNextQuestion(StudentQuestion studentQuestion){
-        return  studentQuestion.getQuestion()
+        return studentQuestion.getQuestion()
                 .getQuestionnaire()
-                .getQuestions().get(studentQuestion.getQuestion().getSequenceNumber());
+                .getQuestions()
+                .stream()
+                .filter(q -> q.getSequenceNumber().equals(studentQuestion.getQuestion().getSequenceNumber() + 1))
+                .findFirst().orElse(null);
     }
 
     private Question getPreviousQuestion(StudentQuestion studentQuestion){
         return  studentQuestion.getQuestion()
                 .getQuestionnaire()
-                .getQuestions().get(studentQuestion.getQuestion().getSequenceNumber()-2);
+                .getQuestions()
+                .stream()
+                .filter(q -> q.getSequenceNumber().equals(studentQuestion.getQuestion().getSequenceNumber() - 1))
+                .findFirst().orElse(null);
+    }
+
+    private void fillInStudentQuestionWithQuestionnaire(StudentQuestion studentQuestion){
+        Questionnaire questionnaire = questionnaireRepository.findByQuestionId(studentQuestion.getQuestion().getId());
+        studentQuestion.getQuestion().setQuestionnaire(questionnaire);
     }
     @Override
     public StudentQuestionDto next(StudentQuestionDto studentQuestionDto) {
         StudentQuestion studentQuestion = studentQuestionMapper.fromDtoToModel(studentQuestionDto);
+        fillInStudentQuestionWithQuestionnaire(studentQuestion);
         studentQuestion = studentQuestionRepository.save(studentQuestion);
         if(studentQuestion.getQuestion().getSequenceNumber() < studentQuestion.getQuestion().getQuestionnaire().getQuestions().size()){
             Question nextQuestion = getNextQuestion(studentQuestion);
@@ -129,7 +141,7 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
                     .student(studentQuestion.getStudent())
                     .build();
             nextStudentQuestion = studentQuestionRepository.save(nextStudentQuestion);
-            return studentQuestionMapper.fromModelToDto(nextStudentQuestion);
+            return this.mapStudentQuestionToStudentQuestionDto(nextStudentQuestion);
         }
         return studentQuestionDto;
     }
@@ -140,7 +152,7 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
         studentQuestion = studentQuestionRepository.save(studentQuestion);
         if(studentQuestion.getQuestion().getSequenceNumber() > 1){
             Question previousQuestion = getPreviousQuestion(studentQuestion);
-            studentQuestionRepository.findStudentQuestionByQuestion(previousQuestion);
+            studentQuestionRepository.findStudentQuestionByQuestionAndStudent(previousQuestion, studentQuestion.getStudent());
             StudentQuestion nextStudentQuestion = StudentQuestion.builder()
                     .question(previousQuestion)
                     .student(studentQuestion.getStudent())
