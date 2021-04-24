@@ -25,6 +25,7 @@ public class StudentQuestionMapperImpl implements StudentQuestionMapper {
                 .question(studentQuestionDto.getQuestion() != null
                         ? questionMapper.fromDtoToModel(studentQuestionDto.getQuestion())
                         : null)
+                .locked(studentQuestionDto.isLocked())
                 .build();
     }
 
@@ -41,6 +42,7 @@ public class StudentQuestionMapperImpl implements StudentQuestionMapper {
                 .question(studentQuestion.getQuestion() != null
                         ? questionMapper.fromModelToDto(studentQuestion.getQuestion())
                         : null)
+                .locked(studentQuestion.isLocked())
                 .build();
     }
 }

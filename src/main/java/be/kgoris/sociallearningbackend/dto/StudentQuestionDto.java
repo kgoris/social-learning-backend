@@ -15,4 +15,5 @@ public class StudentQuestionDto {
     private StudentDto student;
     private QuestionDto question;
     private QuestionnaireDto questionnaire;
+    private boolean locked;
 }

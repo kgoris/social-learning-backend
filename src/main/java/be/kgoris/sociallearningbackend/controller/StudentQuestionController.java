@@ -1,5 +1,6 @@
 package be.kgoris.sociallearningbackend.controller;
 
+import be.kgoris.sociallearningbackend.dto.ResultsDto;
 import be.kgoris.sociallearningbackend.dto.StudentDto;
 import be.kgoris.sociallearningbackend.dto.StudentQuestionDto;
 import be.kgoris.sociallearningbackend.service.StudentQuestionService;
@@ -16,30 +17,38 @@ public class StudentQuestionController {
     private final StudentQuestionService studentQuestionService;
 
     @PostMapping("/find-by-student")
-    List<StudentQuestionDto> findByStudent(@RequestBody StudentDto studentDto){
+    public List<StudentQuestionDto> findByStudent(@RequestBody StudentDto studentDto){
         return studentQuestionService.findByStudent(studentDto);
     }
 
     @GetMapping("{id}")
-    StudentQuestionDto findById(@PathVariable(name="id") Integer id){
+    public StudentQuestionDto findById(@PathVariable(name="id") Integer id){
         return studentQuestionService.findById(id);
     }
 
     @PostMapping("/create-by-questionnaireId-and-student")
-    StudentQuestionDto createStudentQuestion(@RequestParam(name="questionnaireId") Integer questionnaireId,
+    public StudentQuestionDto createStudentQuestion(@RequestParam(name="questionnaireId") Integer questionnaireId,
                                              @RequestBody StudentDto studentDto){
         return studentQuestionService.createByQuestionnaireIdAndStudentDto(questionnaireId, studentDto);
     }
 
     @PostMapping("/next")
-    StudentQuestionDto next(@RequestBody StudentQuestionDto studentQuestionDto){
+    public StudentQuestionDto next(@RequestBody StudentQuestionDto studentQuestionDto){
         return studentQuestionService.next(studentQuestionDto);
     }
 
     @PostMapping("/previous")
-    StudentQuestionDto previous(@RequestBody StudentQuestionDto studentQuestionDto){
+    public StudentQuestionDto previous(@RequestBody StudentQuestionDto studentQuestionDto){
         return studentQuestionService.previous(studentQuestionDto);
     }
 
+    @PostMapping("/lock")
+    public void lock(@RequestParam(name="questionnaireId") Integer questionnaireId, @RequestBody StudentDto studentDto){
+        studentQuestionService.lock(questionnaireId, studentDto);
+    }
 
+    @PostMapping("/results")
+    public ResultsDto results(@RequestParam(name="questionnaireId") Integer questionnaireId, @RequestBody StudentDto studentDto){
+        return studentQuestionService.getResultsForStudentAndQuestionnaire(studentDto, questionnaireId);
+    }
 }

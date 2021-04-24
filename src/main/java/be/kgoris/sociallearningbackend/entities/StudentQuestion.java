@@ -25,4 +25,7 @@ public class StudentQuestion {
     private Student student;
 
     @ManyToOne private Question question;
+
+    @Column(nullable=false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean locked;
 }

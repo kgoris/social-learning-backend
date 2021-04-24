@@ -1,21 +1,18 @@
 package be.kgoris.sociallearningbackend.service;
 
+import be.kgoris.sociallearningbackend.allenum.QuestionType;
 import be.kgoris.sociallearningbackend.dao.QuestionnaireRepository;
 import be.kgoris.sociallearningbackend.dao.StudentQuestionRepository;
 import be.kgoris.sociallearningbackend.dao.StudentRepository;
-import be.kgoris.sociallearningbackend.dto.QuestionnaireDto;
-import be.kgoris.sociallearningbackend.dto.StudentDto;
-import be.kgoris.sociallearningbackend.dto.StudentQuestionDto;
-import be.kgoris.sociallearningbackend.entities.Question;
-import be.kgoris.sociallearningbackend.entities.Questionnaire;
-import be.kgoris.sociallearningbackend.entities.Student;
-import be.kgoris.sociallearningbackend.entities.StudentQuestion;
+import be.kgoris.sociallearningbackend.dto.*;
+import be.kgoris.sociallearningbackend.entities.*;
 import be.kgoris.sociallearningbackend.mapper.QuestionnaireMapper;
 import be.kgoris.sociallearningbackend.mapper.StudentMapper;
 import be.kgoris.sociallearningbackend.mapper.StudentQuestionMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -62,7 +59,7 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
         }
 
         if(!CollectionUtils.isEmpty(studentQuestions)){
-            return studentQuestions.stream()
+            return finalStudentQuestions.stream()
                                     .map(this::mapStudentQuestionToStudentQuestionDto)
                                     .collect(Collectors.toList());
         }
@@ -100,6 +97,7 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
                                         .filter(question -> question.getSequenceNumber() == 1)
                                         .findFirst().orElse(null))
                 .student(student)
+                .locked(false)
                 .build();
         studentQuestion = studentQuestionRepository.save(studentQuestion);
         StudentQuestionDto studentQuestionDto = studentQuestionMapper.fromModelToDto(studentQuestion);
@@ -136,11 +134,14 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
         studentQuestion = studentQuestionRepository.save(studentQuestion);
         if(studentQuestion.getQuestion().getSequenceNumber() < studentQuestion.getQuestion().getQuestionnaire().getQuestions().size()){
             Question nextQuestion = getNextQuestion(studentQuestion);
-            StudentQuestion nextStudentQuestion = StudentQuestion.builder()
-                    .question(nextQuestion)
-                    .student(studentQuestion.getStudent())
-                    .build();
-            nextStudentQuestion = studentQuestionRepository.save(nextStudentQuestion);
+            StudentQuestion nextStudentQuestion = studentQuestionRepository.findStudentQuestionByQuestionAndStudent(nextQuestion, studentQuestion.getStudent());
+            if(nextStudentQuestion == null) {
+                nextStudentQuestion = StudentQuestion.builder()
+                        .question(nextQuestion)
+                        .student(studentQuestion.getStudent())
+                        .build();
+                nextStudentQuestion = studentQuestionRepository.save(nextStudentQuestion);
+            }
             return this.mapStudentQuestionToStudentQuestionDto(nextStudentQuestion);
         }
         return studentQuestionDto;
@@ -152,14 +153,75 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
         studentQuestion = studentQuestionRepository.save(studentQuestion);
         if(studentQuestion.getQuestion().getSequenceNumber() > 1){
             Question previousQuestion = getPreviousQuestion(studentQuestion);
-            studentQuestionRepository.findStudentQuestionByQuestionAndStudent(previousQuestion, studentQuestion.getStudent());
-            StudentQuestion nextStudentQuestion = StudentQuestion.builder()
-                    .question(previousQuestion)
-                    .student(studentQuestion.getStudent())
-                    .build();
-            nextStudentQuestion = studentQuestionRepository.save(nextStudentQuestion);
-            return studentQuestionMapper.fromModelToDto(nextStudentQuestion);
+            StudentQuestion previousStudentQuestion = studentQuestionRepository.findStudentQuestionByQuestionAndStudent(previousQuestion, studentQuestion.getStudent());
+            return studentQuestionMapper.fromModelToDto(previousStudentQuestion);
         }
         return studentQuestionDto;
     }
+
+    @Override
+    public void lock(Integer questionnaireId, StudentDto studentDto) {
+        Optional<Questionnaire> questionnaire = questionnaireRepository.findById(questionnaireId);
+        Student student = studentMapper.fromDtoToModel(studentDto);
+        if(questionnaire.isPresent()){
+            List<StudentQuestion> studentQuestions = studentQuestionRepository.findByQuestionQuestionnaireAndStudent(questionnaire.get(), student);
+            studentQuestions.forEach(studentQuestion -> {
+                studentQuestion.setLocked(true);
+                studentQuestionRepository.save(studentQuestion);
+            });
+        }
+    }
+
+    public ResultsDto getResultsForStudentAndQuestionnaire(StudentDto studentDto, Integer questionnaireId){
+        Optional<Questionnaire> questionnaire = questionnaireRepository.findById(questionnaireId);
+        Student student = studentMapper.fromDtoToModel(studentDto);
+        if(questionnaire.isPresent()){
+            List<StudentQuestion> studentQuestions = studentQuestionRepository.findByQuestionQuestionnaireAndStudent(questionnaire.get(), student);
+            return this.buildResults(questionnaire.get(), studentQuestions);
+        }
+        return null;
+    }
+
+    private ResultsDto buildResults(Questionnaire questionnaire, List<StudentQuestion> studentQuestions){
+        ResultsDto resultsDto = new ResultsDto(questionnaireMapper.fromModelToDto(questionnaire));
+
+        for(StudentQuestion studentQuestion : studentQuestions){
+            Question question = studentQuestion.getQuestion();
+            OfficialAnswer officialAnswer = question.getOfficialAnswer();
+            Answer studentAnswer = studentQuestion.getAnswer();
+            if(QuestionType.FREE_TEXT.equals(question.getType())){
+                checkFreeTextOrTrueFalseAnswer(resultsDto, question, officialAnswer, studentAnswer);
+            }else if(QuestionType.MULTIPLE_CHOICE.equals(question.getType())){
+                checkMultipleChoiceAnswer(resultsDto, question, officialAnswer, studentAnswer);
+            }else if(QuestionType.SINGLE_CHOICE.equals(question.getType())){
+
+            }else if(QuestionType.TRUE_FALSE.equals(question.getType())){
+                checkFreeTextOrTrueFalseAnswer(resultsDto, question, officialAnswer, studentAnswer);
+            }
+        }
+        return  resultsDto;
+    }
+
+    private void checkMultipleChoiceAnswer(ResultsDto resultsDto, Question question, OfficialAnswer officialAnswer, Answer studentAnswer) {
+        if(!officialAnswer.getPropositions().get(0).equals(studentAnswer.getProposition().getValue())){
+            ErrorDto errorDto = ErrorDto.builder()
+                    .questionTitle(question.getTitle())
+                    .userAnswer(studentAnswer.getProposition().getValue())
+                    .trueAnswer(officialAnswer.getPropositions().get(0).getValue())
+                    .build();
+            resultsDto.addError(errorDto);
+        }
+    }
+
+    private void checkFreeTextOrTrueFalseAnswer(ResultsDto resultsDto, Question question, OfficialAnswer officialAnswer, Answer studentAnswer) {
+        if(!StringUtils.hasText(studentAnswer.getValue()) || !officialAnswer.getValue().toLowerCase().equals(studentAnswer.getValue().toLowerCase())) {
+            ErrorDto errorDto = ErrorDto.builder()
+                    .questionTitle(question.getTitle())
+                    .userAnswer(studentAnswer.getValue())
+                    .trueAnswer(officialAnswer.getValue())
+                    .build();
+            resultsDto.addError(errorDto);
+        }
+    }
+
 }
