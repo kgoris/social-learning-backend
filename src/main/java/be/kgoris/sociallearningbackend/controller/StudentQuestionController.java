@@ -51,4 +51,9 @@ public class StudentQuestionController {
     public ResultsDto results(@RequestParam(name="questionnaireId") Integer questionnaireId, @RequestBody StudentDto studentDto){
         return studentQuestionService.getResultsForStudentAndQuestionnaire(studentDto, questionnaireId);
     }
+
+    @PostMapping("/reset")
+    public StudentQuestionDto reset(@RequestParam(name="questionnaireId") Integer questionnaireId, @RequestBody StudentDto studentDto){
+        return studentQuestionService.reset(studentDto, questionnaireId);
+    }
 }

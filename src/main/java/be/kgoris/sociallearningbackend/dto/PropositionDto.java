@@ -13,5 +13,5 @@ public class PropositionDto {
     private Integer id;
     private String value;
     private Integer officialAnswerId;
-    private Integer questionId;
+    private String questionId;
 }

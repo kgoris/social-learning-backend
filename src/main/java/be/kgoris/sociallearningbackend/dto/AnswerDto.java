@@ -13,4 +13,5 @@ public class AnswerDto {
     private Integer id;
     private PropositionDto proposition;
     private String value;
+    private Integer propositionId;
 }

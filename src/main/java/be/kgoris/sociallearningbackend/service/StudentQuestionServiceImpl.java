@@ -1,6 +1,7 @@
 package be.kgoris.sociallearningbackend.service;
 
 import be.kgoris.sociallearningbackend.allenum.QuestionType;
+import be.kgoris.sociallearningbackend.dao.AnswerRepository;
 import be.kgoris.sociallearningbackend.dao.QuestionnaireRepository;
 import be.kgoris.sociallearningbackend.dao.StudentQuestionRepository;
 import be.kgoris.sociallearningbackend.dao.StudentRepository;
@@ -27,6 +28,7 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
     private final QuestionnaireRepository questionnaireRepository;
     private final StudentRepository studentRepository;
     private final QuestionnaireMapper questionnaireMapper;
+    private final AnswerRepository answerRepository;
 
     @Override
     public List<StudentQuestionDto> findByStudent(StudentDto studentDto) {
@@ -178,6 +180,27 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
         if(questionnaire.isPresent()){
             List<StudentQuestion> studentQuestions = studentQuestionRepository.findByQuestionQuestionnaireAndStudent(questionnaire.get(), student);
             return this.buildResults(questionnaire.get(), studentQuestions);
+        }
+        return null;
+    }
+
+    @Override
+    public StudentQuestionDto reset(StudentDto studentDto, Integer questionnaireId) {
+        Optional<Questionnaire> questionnaire = questionnaireRepository.findById(questionnaireId);
+        Student student = studentMapper.fromDtoToModel(studentDto);
+        if(questionnaire.isPresent()){
+            List<StudentQuestion> studentQuestions = studentQuestionRepository.findByQuestionQuestionnaireAndStudent(questionnaire.get(), student);
+            studentQuestions.forEach(studentQuestion -> {
+                studentQuestion.setLocked(false);
+                Answer answer = studentQuestion.getAnswer();
+                studentQuestion.setAnswer(null);
+                studentQuestionRepository.save(studentQuestion);
+                answerRepository.delete(answer);
+            });
+            return studentQuestionMapper.fromModelToDto(studentQuestions
+                                                            .stream()
+                                                            .filter(studentQuestion -> studentQuestion.getQuestion().getSequenceNumber().equals(1))
+                                                            .findFirst().orElse(null));
         }
         return null;
     }

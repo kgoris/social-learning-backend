@@ -17,4 +17,5 @@ public interface StudentQuestionService {
     StudentQuestionDto previous(StudentQuestionDto studentQuestionDto);
     void lock(Integer questionnaireId, StudentDto student);
     ResultsDto getResultsForStudentAndQuestionnaire(StudentDto studentDto, Integer questionnaireId);
+    StudentQuestionDto reset(StudentDto studentDto, Integer questionnaireId);
 }

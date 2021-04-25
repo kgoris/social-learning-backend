@@ -23,7 +23,7 @@ public class PropositionMapperImpl implements PropositionMapper {
         return PropositionDto.builder()
                 .id(proposition.getId())
                 .officialAnswerId(officialAnswer != null ? officialAnswer.getId() : null)
-                .questionId(question != null ? question.getId() : null)
+                .questionId(question != null ? question.getId().toString() : null)
                 .value(proposition.getValue())
                 .build();
     }
