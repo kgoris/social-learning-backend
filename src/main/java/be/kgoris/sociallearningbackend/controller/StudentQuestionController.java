@@ -3,6 +3,7 @@ package be.kgoris.sociallearningbackend.controller;
 import be.kgoris.sociallearningbackend.dto.ResultsDto;
 import be.kgoris.sociallearningbackend.dto.StudentDto;
 import be.kgoris.sociallearningbackend.dto.StudentQuestionDto;
+import be.kgoris.sociallearningbackend.entities.StudentQuestion;
 import be.kgoris.sociallearningbackend.service.StudentQuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +43,11 @@ public class StudentQuestionController {
         return studentQuestionService.previous(studentQuestionDto);
     }
 
+    @PostMapping("save")
+    public void save(@RequestBody StudentQuestionDto studentQuestionDto){
+        studentQuestionService.save(studentQuestionDto);
+    }
+
     @PostMapping("/lock")
     public void lock(@RequestParam(name="questionnaireId") Integer questionnaireId, @RequestBody StudentDto studentDto){
         studentQuestionService.lock(questionnaireId, studentDto);
@@ -55,5 +61,10 @@ public class StudentQuestionController {
     @PostMapping("/reset")
     public StudentQuestionDto reset(@RequestParam(name="questionnaireId") Integer questionnaireId, @RequestBody StudentDto studentDto){
         return studentQuestionService.reset(studentDto, questionnaireId);
+    }
+
+    @PostMapping("/visit")
+    public StudentQuestionDto visit(@RequestParam(name="questionnaireId") Integer questionnaireId, @RequestBody StudentDto studentDto){
+        return studentQuestionService.visit(studentDto, questionnaireId);
     }
 }

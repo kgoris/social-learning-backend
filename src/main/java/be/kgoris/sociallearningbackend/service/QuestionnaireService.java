@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface QuestionnaireService {
     List<QuestionnaireDto> getQuestionnairesByStudentAndAccessType(StudentDto studentDto, AccessType accessType);
+    List<QuestionnaireDto> getQuestionnairesLockedByStudentAndAccessType(StudentDto studentDto, AccessType accessType);
     QuestionnaireDto findById(Integer id);
 
 }

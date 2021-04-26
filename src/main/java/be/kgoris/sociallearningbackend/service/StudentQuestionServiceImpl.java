@@ -42,7 +42,9 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
                 studentQuestionsMap.put(studentQuestion.getQuestion().getQuestionnaire(), new ArrayList<>());
                 stList = studentQuestionsMap.get(studentQuestion.getQuestion().getQuestionnaire());
             }
-            stList.add(studentQuestion);
+            if(!studentQuestion.isLocked()) {
+                stList.add(studentQuestion);
+            }
             //sort the student question list by question sequence number
             if(stList.size()>1){
                 stList.sort(new Comparator<StudentQuestion>() {
@@ -57,7 +59,9 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
         //for each questionnaire, get the last student question, it will become the "current" one
         List<StudentQuestion> finalStudentQuestions = new ArrayList<>();
         for (Map.Entry<Questionnaire, List<StudentQuestion>> pair : studentQuestionsMap.entrySet()) {
-            finalStudentQuestions.add(pair.getValue().get(pair.getValue().size() - 1));
+            if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(pair.getValue())) {
+                finalStudentQuestions.add(pair.getValue().get(pair.getValue().size() - 1));
+            }
         }
 
         if(!CollectionUtils.isEmpty(studentQuestions)){
@@ -162,6 +166,12 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
     }
 
     @Override
+    public void save(StudentQuestionDto studentQuestionDto) {
+        StudentQuestion studentQuestion = studentQuestionMapper.fromDtoToModel(studentQuestionDto);
+        studentQuestionRepository.save(studentQuestion);
+    }
+
+    @Override
     public void lock(Integer questionnaireId, StudentDto studentDto) {
         Optional<Questionnaire> questionnaire = questionnaireRepository.findById(questionnaireId);
         Student student = studentMapper.fromDtoToModel(studentDto);
@@ -201,6 +211,20 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
                                                             .stream()
                                                             .filter(studentQuestion -> studentQuestion.getQuestion().getSequenceNumber().equals(1))
                                                             .findFirst().orElse(null));
+        }
+        return null;
+    }
+
+    @Override
+    public StudentQuestionDto visit(StudentDto studentDto, Integer questionnaireId){
+        Optional<Questionnaire> questionnaire = questionnaireRepository.findById(questionnaireId);
+        Student student = studentMapper.fromDtoToModel(studentDto);
+        if(questionnaire.isPresent()){
+            List<StudentQuestion> studentQuestions = studentQuestionRepository.findByQuestionQuestionnaireAndStudent(questionnaire.get(), student);
+            return studentQuestionMapper.fromModelToDto(studentQuestions
+                    .stream()
+                    .filter(studentQuestion -> studentQuestion.getQuestion().getSequenceNumber().equals(1))
+                    .findFirst().orElse(null));
         }
         return null;
     }

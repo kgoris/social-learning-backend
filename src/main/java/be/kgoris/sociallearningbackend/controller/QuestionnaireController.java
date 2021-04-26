@@ -25,6 +25,13 @@ public class QuestionnaireController {
                 query.getAccessType());
     }
 
+    @PostMapping("/find_locked")
+    public List<QuestionnaireDto> findLockedQuestionnairesByStudent(@RequestBody QuestionnaireQueryDto query){
+        LOGGER.info("findNotLockedQuestionnairesByStudent");
+        return questionnaireService.getQuestionnairesLockedByStudentAndAccessType(query.getStudentDto(),
+                query.getAccessType());
+    }
+
     @GetMapping("{id}")
     public QuestionnaireDto findById(@PathVariable("id") Integer id){
         LOGGER.info("find by id " + id);
