@@ -81,6 +81,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf()
                 .ignoringAntMatchers("/api/login")
                 .ignoringAntMatchers("/api/logout")
+                .ignoringAntMatchers("/gkz-stomp-endpoint")
+                .ignoringAntMatchers("/gkz/*")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
                 .sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS ).and()
                 .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint ).and()
