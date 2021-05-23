@@ -7,9 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,6 +23,11 @@ public class StudentController {
     @RequestMapping(method = RequestMethod.GET)
     public List<StudentDto> all(){
         return studentService.findAll();
+    }
+
+    @GetMapping("{id}")
+    public StudentDto findById(@PathVariable(name = "id") String id){
+        return studentService.findById(Integer.valueOf(id));
     }
 
     @RequestMapping("/whoami")

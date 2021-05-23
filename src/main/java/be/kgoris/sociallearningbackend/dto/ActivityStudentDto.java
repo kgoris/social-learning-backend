@@ -1,6 +1,5 @@
-package be.kgoris.sociallearningbackend.websocket;
+package be.kgoris.sociallearningbackend.dto;
 
-import be.kgoris.sociallearningbackend.dto.StudentDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,8 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ActivityDto {
-    private Integer questionnaire;
-    private String buttonClicked;
+public class ActivityStudentDto {
+    private ActivityDto activityDto;
     private StudentDto studentDto;
 }
