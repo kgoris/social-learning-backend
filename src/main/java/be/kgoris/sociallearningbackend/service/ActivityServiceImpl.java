@@ -9,6 +9,7 @@ import be.kgoris.sociallearningbackend.mapper.ActivityMapper;
 import be.kgoris.sociallearningbackend.mapper.StudentMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,12 +23,13 @@ import java.util.stream.Collectors;
 public class ActivityServiceImpl implements ActivityService {
     private final ActivityRepository activityRepository;
     private final ActivityMapper activityMapper;
-    private final StudentMapper studentMapper;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     public void save(ActivityDto activityDto) {
         Activity activity = activityMapper.fromDtoToModel(activityDto);
         activity.setActivityDatetime(LocalDateTime.now());
+        simpMessagingTemplate.convertAndSend("/topic/activity", activityDto);
         activityRepository.save(activity);
     }
 
