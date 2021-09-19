@@ -28,7 +28,6 @@ public class Student implements UserDetails {
     private String username;
     private String password;
 
-
     @ManyToOne
     private StudentGroup group;
 

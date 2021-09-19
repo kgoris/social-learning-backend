@@ -75,6 +75,7 @@ public class StudentServiceImpl implements StudentService {
             student.setFirstName(studentDto.getFirstName());
             student.setName(studentDto.getName());
             student.setUsername(studentDto.getUsername());
+            student.setStudentObserved(studentMapper.fromDtoToModel(studentDto.getStudentObserved()));
 
             studentRepository.save(student);
            /* List<BigInteger> autorityIds = autorityRepository.findAutorityIdsByUserId(user.getId());

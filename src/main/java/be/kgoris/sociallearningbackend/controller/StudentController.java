@@ -30,6 +30,10 @@ public class StudentController {
         return studentService.findById(Integer.valueOf(id));
     }
 
+    @PostMapping
+    public void update(@RequestBody StudentDto studentDto){
+        studentService.update(studentDto);
+    }
     @RequestMapping("/whoami")
     public StudentDto user() {
         return studentService.whoIamI();
