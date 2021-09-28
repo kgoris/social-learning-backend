@@ -42,7 +42,7 @@ public class ActivityServiceImpl implements ActivityService {
             activiesByStudent.putIfAbsent(activity.getStudent(), new ArrayList<>());
             activiesByStudent.get(activity.getStudent()).add(activity);
         });
-        for(Student student : activiesByStudent.keySet()){
+        for (Student student : activiesByStudent.keySet()) {
             List<Activity> activityForCurrentStudent = activiesByStudent.get(student);
             activityForCurrentStudent.sort(new Comparator<Activity>() {
                 @Override
@@ -50,7 +50,7 @@ public class ActivityServiceImpl implements ActivityService {
                     return activity.getActivityDatetime().compareTo(t1.getActivityDatetime());
                 }
             });
-            if(CollectionUtils.isNotEmpty(activityForCurrentStudent)){
+            if (CollectionUtils.isNotEmpty(activityForCurrentStudent)) {
                 finalActivites.add(activityForCurrentStudent.get(activityForCurrentStudent.size() - 1));
             }
         }

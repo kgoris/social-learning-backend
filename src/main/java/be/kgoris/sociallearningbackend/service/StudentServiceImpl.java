@@ -9,7 +9,7 @@ import be.kgoris.sociallearningbackend.mapper.StudentMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +22,6 @@ public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
-    private final PasswordEncoder passwordEncoder;
     private final AutorityRepository autorityRepository;
     @Override
     public List<StudentDto> findAll() {
@@ -42,20 +41,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void create(StudentDto studentDto) {
-        Student student = studentMapper.fromDtoToModel(studentDto);
-        student.setPassword(passwordEncoder.encode(student.getPassword()));
-        Authority authority = autorityRepository.findByName("ROLE_USER");
-        student.addAuthority(authority);
-        studentRepository.save(student);
-    }
-
-    @Override
     public void resetCredentials() {
     }
 
     @Override
-    public StudentDto findByLogin(String login) throws UsernameNotFoundException {
+    public StudentDto findDtoByUsername(String login) throws UsernameNotFoundException {
         Optional<Student> student = studentRepository.findByUsername(login);
         if(student.isEmpty()){
             return null;
@@ -64,14 +54,15 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public Student findByUsername(String username) {
+        return this.studentRepository.findByUsername(username).get();
+    }
+
+    @Override
     public void update(StudentDto studentDto) {
         Optional<Student> studentOpt = studentRepository.findById(studentDto.getId());
         if(studentOpt.isPresent()){
             Student student = studentOpt.get();
-            String encodedPassword = passwordEncoder.encode(studentDto.getPassword());
-            if(!student.getPassword().equals(passwordEncoder.encode(studentDto.getPassword()))){
-                student.setPassword(encodedPassword);
-            }
             student.setFirstName(studentDto.getFirstName());
             student.setName(studentDto.getName());
             student.setUsername(studentDto.getUsername());

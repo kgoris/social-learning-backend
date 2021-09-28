@@ -5,7 +5,6 @@ import be.kgoris.sociallearningbackend.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -27,6 +26,11 @@ public class UserController {
         return this.studentService.findById( userId );
     }
 
+    @GetMapping("/findbylogin/{login}")
+    public StudentDto findByUsername(@PathVariable(name="login") String login){
+        return studentService.findDtoByUsername(login);
+    }
+
     @RequestMapping( method = GET, value= "all")
     //@PreAuthorize("hasRole('USER')")
     public List<StudentDto> loadAll() {
@@ -35,11 +39,6 @@ public class UserController {
             user.setSelected(false);
         }*/
         return users;
-    }
-
-    @PostMapping
-    public void newUser(@RequestBody StudentDto student){
-        this.studentService.create(student);
     }
 
     @PutMapping
