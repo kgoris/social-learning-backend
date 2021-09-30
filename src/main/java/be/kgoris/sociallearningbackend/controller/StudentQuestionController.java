@@ -17,9 +17,9 @@ public class StudentQuestionController {
 
     private final StudentQuestionService studentQuestionService;
 
-    @PostMapping("/find-by-student")
-    public List<StudentQuestionDto> findByStudent(@RequestBody StudentDto studentDto){
-        return studentQuestionService.findByStudent(studentDto);
+    @GetMapping("/find-by-student/{username}")
+    public List<StudentQuestionDto> findByStudent(@PathVariable(name = "username") String studentUsername){
+        return studentQuestionService.findByStudent(studentUsername);
     }
 
     @GetMapping("{id}")
@@ -27,10 +27,10 @@ public class StudentQuestionController {
         return studentQuestionService.findById(id);
     }
 
-    @PostMapping("/create-by-questionnaireId-and-student")
+    @GetMapping("/create-by-questionnaireId-and-student")
     public StudentQuestionDto createStudentQuestion(@RequestParam(name="questionnaireId") Integer questionnaireId,
-                                             @RequestBody StudentDto studentDto){
-        return studentQuestionService.createByQuestionnaireIdAndStudentDto(questionnaireId, studentDto);
+                                                    @RequestParam(name="username") String username){
+        return studentQuestionService.createByQuestionnaireIdAndStudentDto(questionnaireId, username);
     }
 
     @PostMapping("/next")
@@ -48,9 +48,9 @@ public class StudentQuestionController {
         studentQuestionService.save(studentQuestionDto);
     }
 
-    @PostMapping("/lock")
-    public void lock(@RequestParam(name="questionnaireId") Integer questionnaireId, @RequestBody StudentDto studentDto){
-        studentQuestionService.lock(questionnaireId, studentDto);
+    @GetMapping("/lock")
+    public void lock(@RequestParam(name="questionnaireId") Integer questionnaireId, @RequestParam String studentUsername){
+        studentQuestionService.lock(questionnaireId, studentUsername);
     }
 
     @PostMapping("/results")
@@ -58,13 +58,13 @@ public class StudentQuestionController {
         return studentQuestionService.getResultsForStudentAndQuestionnaire(studentDto, questionnaireId);
     }
 
-    @PostMapping("/reset")
-    public StudentQuestionDto reset(@RequestParam(name="questionnaireId") Integer questionnaireId, @RequestBody StudentDto studentDto){
-        return studentQuestionService.reset(studentDto, questionnaireId);
+    @GetMapping("/reset")
+    public StudentQuestionDto reset(@RequestParam(name="questionnaireId") Integer questionnaireId, @RequestParam(name="username") String username){
+        return studentQuestionService.reset(username, questionnaireId);
     }
 
-    @PostMapping("/visit")
-    public StudentQuestionDto visit(@RequestParam(name="questionnaireId") Integer questionnaireId, @RequestBody StudentDto studentDto){
-        return studentQuestionService.visit(studentDto, questionnaireId);
+    @GetMapping("/visit")
+    public StudentQuestionDto visit(@RequestParam(name="questionnaireId") Integer questionnaireId, @RequestParam(name="username") String username){
+        return studentQuestionService.visit(username, questionnaireId);
     }
 }

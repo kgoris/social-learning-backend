@@ -14,6 +14,7 @@ import be.kgoris.sociallearningbackend.mapper.StudentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,31 +26,31 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     private final QuestionnaireRepository questionnaireRepository;
     private final QuestionnaireMapper questionnaireMapper;
     private final StudentQuestionRepository studentQuestionRepository;
+    private final StudentRepository studentRepository;
 
 
     @Override
-    public List<QuestionnaireDto> getQuestionnairesByStudentAndAccessType(StudentDto studentDto, AccessType accessType) {
-        List<Questionnaire> questionnaires = mapStudentAndFindQuestionnaire(studentDto, accessType);
+    public List<QuestionnaireDto> getQuestionnairesByStudentAndAccessType(String studentUsername, AccessType accessType) {
+        List<Questionnaire> questionnaires = questionnaireRepository.findAllByStudentAndAccessType(studentUsername, accessType);
         return questionnaires.stream().map(questionnaireMapper::fromModelToDto).collect(Collectors.toList());
     }
 
-    private List<Questionnaire> mapStudentAndFindQuestionnaire(StudentDto studentDto, AccessType accessType) {
-        Student student = studentMapper.fromDtoToModel(studentDto);
-        return questionnaireRepository.findAllByStudentAndAccessType(student.getUsername(), accessType);
-    }
-
     @Override
-    public List<QuestionnaireDto> getQuestionnairesLockedByStudentAndAccessType(StudentDto studentDto, AccessType accessType) {
-        Student student = studentMapper.fromDtoToModel(studentDto);
-        List<Questionnaire> questionnaires = questionnaireRepository.findAllByStudentAndAccessType(student.getUsername(), accessType);
-        List<Questionnaire> questionnaireFiltered = questionnaires.stream()
-                .filter(q -> {
-                    return studentQuestionRepository.findByQuestionQuestionnaireAndStudent(q, student)
-                            .stream().anyMatch(StudentQuestion::isLocked);
-                    }
-                )
-                .collect(Collectors.toList());
-        return questionnaireFiltered.stream().map(this.questionnaireMapper::fromModelToDto).collect(Collectors.toList());
+    public List<QuestionnaireDto> getQuestionnairesLockedByStudentAndAccessType(String studentUsername, AccessType accessType) {
+        Optional<Student> student = this.studentRepository.findByUsername(studentUsername);
+        if(student.isPresent()) {
+            List<Questionnaire> questionnaires = questionnaireRepository.findAllByStudentAndAccessType(studentUsername, accessType);
+            List<Questionnaire> questionnaireFiltered = questionnaires.stream()
+                    .filter(q -> {
+                                return studentQuestionRepository.findByQuestionQuestionnaireAndStudent(q, student.get())
+                                        .stream().anyMatch(StudentQuestion::isLocked);
+                            }
+                    )
+                    .collect(Collectors.toList());
+            return questionnaireFiltered.stream().map(this.questionnaireMapper::fromModelToDto).collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     @Override

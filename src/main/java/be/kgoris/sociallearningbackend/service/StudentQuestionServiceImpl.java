@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,10 +32,9 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
     private final AnswerRepository answerRepository;
 
     @Override
-    public List<StudentQuestionDto> findByStudent(StudentDto studentDto) {
+    public List<StudentQuestionDto> findByStudent(String studentUsername) {
         Map<Questionnaire, List<StudentQuestion>> studentQuestionsMap = new HashMap<>();
-        List<StudentQuestion> studentQuestions = studentQuestionRepository.findAllByStudent(
-                                                                            studentMapper.fromDtoToModel(studentDto));
+        List<StudentQuestion> studentQuestions = studentQuestionRepository.findAllByStudent(studentRepository.findByUsername(studentUsername).get());
         //go through all the student question and separate them by questionnaire
         for(StudentQuestion studentQuestion : studentQuestions){
             List<StudentQuestion> stList = studentQuestionsMap.get(studentQuestion.getQuestion().getQuestionnaire());
@@ -94,9 +94,9 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
     }
 
     @Override
-    public StudentQuestionDto createByQuestionnaireIdAndStudentDto(Integer questionnaireId, StudentDto studentDto) {
+    public StudentQuestionDto createByQuestionnaireIdAndStudentDto(Integer questionnaireId, String studentUsername) {
         Questionnaire questionnaire = questionnaireRepository.findById(questionnaireId).orElse(null);
-        Student student = studentRepository.findById(studentDto.getId()).orElse(null);
+        Student student = studentRepository.findByUsername(studentUsername).orElse(null);
         StudentQuestion studentQuestion = StudentQuestion.builder()
                 .question(questionnaire.getQuestions()
                                         .stream()
@@ -172,9 +172,9 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
     }
 
     @Override
-    public void lock(Integer questionnaireId, StudentDto studentDto) {
+    public void lock(Integer questionnaireId, String studentUsername) {
         Optional<Questionnaire> questionnaire = questionnaireRepository.findById(questionnaireId);
-        Student student = studentMapper.fromDtoToModel(studentDto);
+        Student student = studentRepository.findByUsername(studentUsername).get();
         if(questionnaire.isPresent()){
             List<StudentQuestion> studentQuestions = studentQuestionRepository.findByQuestionQuestionnaireAndStudent(questionnaire.get(), student);
             studentQuestions.forEach(studentQuestion -> {
@@ -195,11 +195,11 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
     }
 
     @Override
-    public StudentQuestionDto reset(StudentDto studentDto, Integer questionnaireId) {
+    public StudentQuestionDto reset(String username, Integer questionnaireId) {
         Optional<Questionnaire> questionnaire = questionnaireRepository.findById(questionnaireId);
-        Student student = studentMapper.fromDtoToModel(studentDto);
-        if(questionnaire.isPresent()){
-            List<StudentQuestion> studentQuestions = studentQuestionRepository.findByQuestionQuestionnaireAndStudent(questionnaire.get(), student);
+        Optional<Student> student = studentRepository.findByUsername(username);
+        if(questionnaire.isPresent() && student.isPresent()){
+            List<StudentQuestion> studentQuestions = studentQuestionRepository.findByQuestionQuestionnaireAndStudent(questionnaire.get(), student.get());
             studentQuestions.forEach(studentQuestion -> {
                 studentQuestion.setLocked(false);
                 Answer answer = studentQuestion.getAnswer();
@@ -216,11 +216,11 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
     }
 
     @Override
-    public StudentQuestionDto visit(StudentDto studentDto, Integer questionnaireId){
+    public StudentQuestionDto visit(String username, Integer questionnaireId){
         Optional<Questionnaire> questionnaire = questionnaireRepository.findById(questionnaireId);
-        Student student = studentMapper.fromDtoToModel(studentDto);
-        if(questionnaire.isPresent()){
-            List<StudentQuestion> studentQuestions = studentQuestionRepository.findByQuestionQuestionnaireAndStudent(questionnaire.get(), student);
+        Optional<Student> student = studentRepository.findByUsername(username);
+        if(questionnaire.isPresent() && student.isPresent()){
+            List<StudentQuestion> studentQuestions = studentQuestionRepository.findByQuestionQuestionnaireAndStudent(questionnaire.get(), student.get());
             return studentQuestionMapper.fromModelToDto(studentQuestions
                     .stream()
                     .filter(studentQuestion -> studentQuestion.getQuestion().getSequenceNumber().equals(1))

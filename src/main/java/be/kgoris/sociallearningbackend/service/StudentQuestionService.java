@@ -8,14 +8,14 @@ import java.util.List;
 
 
 public interface StudentQuestionService {
-    List<StudentQuestionDto> findByStudent(StudentDto studentDto);
+    List<StudentQuestionDto> findByStudent(String studentUsername);
     StudentQuestionDto findById(Integer id);
-    StudentQuestionDto createByQuestionnaireIdAndStudentDto(Integer questionnaireId, StudentDto studentDto);
+    StudentQuestionDto createByQuestionnaireIdAndStudentDto(Integer questionnaireId, String studentUsername);
     StudentQuestionDto next(StudentQuestionDto studentQuestionDto);
     StudentQuestionDto previous(StudentQuestionDto studentQuestionDto);
     void save(StudentQuestionDto studentQuestionDto);
-    void lock(Integer questionnaireId, StudentDto student);
+    void lock(Integer questionnaireId, String studentUsername);
     ResultsDto getResultsForStudentAndQuestionnaire(StudentDto studentDto, Integer questionnaireId);
-    StudentQuestionDto reset(StudentDto studentDto, Integer questionnaireId);
-    StudentQuestionDto visit(StudentDto studentDto, Integer questionnaireId);
+    StudentQuestionDto reset(String studentUsername, Integer questionnaireId);
+    StudentQuestionDto visit(String studentUsername, Integer questionnaireId);
 }

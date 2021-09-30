@@ -1,14 +1,10 @@
 package be.kgoris.sociallearningbackend.service;
 
-import be.kgoris.sociallearningbackend.dao.AutorityRepository;
 import be.kgoris.sociallearningbackend.dao.StudentRepository;
 import be.kgoris.sociallearningbackend.dto.StudentDto;
-import be.kgoris.sociallearningbackend.entities.Authority;
 import be.kgoris.sociallearningbackend.entities.Student;
 import be.kgoris.sociallearningbackend.mapper.StudentMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import org.springframework.stereotype.Service;
 
@@ -22,7 +18,6 @@ public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
-    private final AutorityRepository autorityRepository;
     @Override
     public List<StudentDto> findAll() {
         List<Student> students = studentRepository.findAll();
@@ -45,7 +40,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentDto findDtoByUsername(String login) throws UsernameNotFoundException {
+    public StudentDto findDtoByUsername(String login) {
         Optional<Student> student = studentRepository.findByUsername(login);
         if(student.isEmpty()){
             return null;
@@ -78,15 +73,15 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentDto whoIamI() {
-        Student student =  (Student) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
-        if(student != null){
-            return studentMapper.fromModelToDto(student);
+    public void linkObervedUserOnAUser(String currentUsername, String observedUsername) {
+        Optional<Student> currentStudentOpt = studentRepository.findByUsername(currentUsername);
+        Optional<Student> observedStudentOpt = studentRepository.findByUsername(observedUsername);
+        if(currentStudentOpt.isPresent() && observedStudentOpt.isPresent()){
+            Student currentStudent = currentStudentOpt.get();
+            Student obervedStudent = observedStudentOpt.get();
+            currentStudent.setStudentObserved(obervedStudent);
+            studentRepository.save(currentStudent);
         }
-        return null;
     }
 
 

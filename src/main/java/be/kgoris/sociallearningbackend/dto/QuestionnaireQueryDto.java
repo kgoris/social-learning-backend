@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class QuestionnaireQueryDto {
-    private StudentDto studentDto;
+    private String studentUsername;
     private AccessType accessType;
 }

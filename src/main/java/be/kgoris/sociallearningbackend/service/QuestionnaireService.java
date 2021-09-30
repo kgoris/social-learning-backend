@@ -9,8 +9,8 @@ import be.kgoris.sociallearningbackend.entities.Student;
 import java.util.List;
 
 public interface QuestionnaireService {
-    List<QuestionnaireDto> getQuestionnairesByStudentAndAccessType(StudentDto studentDto, AccessType accessType);
-    List<QuestionnaireDto> getQuestionnairesLockedByStudentAndAccessType(StudentDto studentDto, AccessType accessType);
+    List<QuestionnaireDto> getQuestionnairesByStudentAndAccessType(String studentUsername, AccessType accessType);
+    List<QuestionnaireDto> getQuestionnairesLockedByStudentAndAccessType(String studentUsername, AccessType accessType);
     QuestionnaireDto findById(Integer id);
 
 }

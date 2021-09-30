@@ -31,6 +31,12 @@ public class UserController {
         return studentService.findDtoByUsername(login);
     }
 
+    @GetMapping("/linkObserved")
+    public void linkObervedUserOnAUser(@RequestParam(name="currentUsername") String currentUsername,
+                                       @RequestParam(name="observedUsername") String observedUsername){
+
+    }
+
     @RequestMapping( method = GET, value= "all")
     //@PreAuthorize("hasRole('USER')")
     public List<StudentDto> loadAll() {
@@ -52,15 +58,6 @@ public class UserController {
         Map<String, String> result = new HashMap<>();
         result.put( "result", "success" );
         return ResponseEntity.accepted().body(result);
-    }
-    /*
-     *  We are not using userService.findByUsername here(we could),
-     *  so it is good that we are making sure that the user has role "ROLE_USER"
-     *  to access this endpoint.
-     */
-    @RequestMapping("/whoami")
-    public StudentDto user() {
-        return studentService.whoIamI();
     }
 
 }

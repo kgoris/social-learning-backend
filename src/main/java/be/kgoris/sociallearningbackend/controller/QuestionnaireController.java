@@ -21,14 +21,14 @@ public class QuestionnaireController {
     @PostMapping("/find_by_student_and_access_type")
     public List<QuestionnaireDto> findQuestionnairesByStudent(@RequestBody QuestionnaireQueryDto query){
         LOGGER.info("findQuestionnairesByStudentAndAccessType");
-        return questionnaireService.getQuestionnairesByStudentAndAccessType(query.getStudentDto(),
+        return questionnaireService.getQuestionnairesByStudentAndAccessType(query.getStudentUsername(),
                 query.getAccessType());
     }
 
     @PostMapping("/find_locked")
     public List<QuestionnaireDto> findLockedQuestionnairesByStudent(@RequestBody QuestionnaireQueryDto query){
         LOGGER.info("findNotLockedQuestionnairesByStudent");
-        return questionnaireService.getQuestionnairesLockedByStudentAndAccessType(query.getStudentDto(),
+        return questionnaireService.getQuestionnairesLockedByStudentAndAccessType(query.getStudentUsername(),
                 query.getAccessType());
     }
 

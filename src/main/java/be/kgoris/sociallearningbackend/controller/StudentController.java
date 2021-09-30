@@ -5,8 +5,6 @@ import be.kgoris.sociallearningbackend.service.StudentService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,9 +32,4 @@ public class StudentController {
     public void update(@RequestBody StudentDto studentDto){
         studentService.update(studentDto);
     }
-    @RequestMapping("/whoami")
-    public StudentDto user() {
-        return studentService.whoIamI();
-    }
-
 }
