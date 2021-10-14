@@ -18,7 +18,7 @@ public class ActivityDto {
     private RessourceType ressourceType;
     private ActionType type;
     private Integer ressourceId;
-    private String studentUserName;
+    private String studentUsername;
     private PropositionDto proposition;
     private String value;
 }

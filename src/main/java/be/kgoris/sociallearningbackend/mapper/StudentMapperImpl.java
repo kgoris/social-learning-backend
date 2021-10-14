@@ -14,6 +14,7 @@ public class StudentMapperImpl implements StudentMapper {
                 .name(student.getName())
                 .username(student.getUsername())
                 .password(student.getPassword())
+                .studentObserved(student.getStudentObserved() != null ? fromModelToDto(student.getStudentObserved()) : null)
                 .build();
     }
 
@@ -25,6 +26,7 @@ public class StudentMapperImpl implements StudentMapper {
                 .firstName(studentDto.getFirstName())
                 .name(studentDto.getName())
                 .password(studentDto.getPassword())
+                .studentObserved(studentDto.getStudentObserved() != null ? fromDtoToModel(studentDto.getStudentObserved()) : null)
                 .build();
     }
 }

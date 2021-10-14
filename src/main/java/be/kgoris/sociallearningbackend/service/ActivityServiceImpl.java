@@ -37,7 +37,7 @@ public class ActivityServiceImpl implements ActivityService {
     public List<ActivityDto> findLastActivityByWorkingStudents() {
         Map<Student, List<Activity>> activiesByStudent = new HashMap<>();
         List<Activity> finalActivites = new ArrayList<>();
-        List<Activity> activities = activityRepository.findLastActivitiesByWorkingStudents(LocalDateTime.now().minusMinutes(2));
+        List<Activity> activities = activityRepository.findLastActivitiesByWorkingStudents(LocalDateTime.now().minusMinutes(5));
         activities.forEach(activity -> {
             activiesByStudent.putIfAbsent(activity.getStudent(), new ArrayList<>());
             activiesByStudent.get(activity.getStudent()).add(activity);

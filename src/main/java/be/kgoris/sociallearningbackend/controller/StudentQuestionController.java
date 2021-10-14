@@ -49,7 +49,7 @@ public class StudentQuestionController {
     }
 
     @GetMapping("/lock")
-    public void lock(@RequestParam(name="questionnaireId") Integer questionnaireId, @RequestParam String studentUsername){
+    public void lock(@RequestParam(name="questionnaireId") Integer questionnaireId, @RequestParam(name="username") String studentUsername){
         studentQuestionService.lock(questionnaireId, studentUsername);
     }
 

@@ -19,7 +19,7 @@ public class ActivityController {
     public void save(@RequestBody ActivityDto activityDto) {
         activityService.save(activityDto);
     }
-
+    //TODO: to fix
     @GetMapping("working-students")
     List<ActivityDto> findLastActivityByWorkingStudents(){
         return activityService.findLastActivityByWorkingStudents();

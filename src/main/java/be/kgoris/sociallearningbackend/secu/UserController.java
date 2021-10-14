@@ -34,7 +34,7 @@ public class UserController {
     @GetMapping("/linkObserved")
     public void linkObervedUserOnAUser(@RequestParam(name="currentUsername") String currentUsername,
                                        @RequestParam(name="observedUsername") String observedUsername){
-
+        studentService.linkObervedUserOnAUser(currentUsername, observedUsername);
     }
 
     @RequestMapping( method = GET, value= "all")

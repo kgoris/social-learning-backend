@@ -250,7 +250,7 @@ public class StudentQuestionServiceImpl implements StudentQuestionService{
     }
 
     private void checkMultipleChoiceAnswer(ResultsDto resultsDto, Question question, OfficialAnswer officialAnswer, Answer studentAnswer) {
-        if(!officialAnswer.getPropositions().get(0).equals(studentAnswer.getProposition().getValue())){
+        if(!officialAnswer.getPropositions().get(0).equals(studentAnswer.getProposition())){
             ErrorDto errorDto = ErrorDto.builder()
                     .questionTitle(question.getTitle())
                     .userAnswer(studentAnswer.getProposition().getValue())

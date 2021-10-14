@@ -9,6 +9,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ActivityRepository extends JpaRepository<Activity, Integer> {
-    @Query("SELECT distinct a FROM ACTIVITY a join a.student s where a.activityDatetime > :datelimit and not (a.ressourceType = 'QUESTIONNAIRE' and a.type = 'TYPE')")
+    @Query("SELECT distinct a FROM ACTIVITY a where a.activityDatetime > :datelimit and not (a.ressourceType = 'QUESTIONNAIRE' and a.type = 'TYPE')")
     List<Activity> findLastActivitiesByWorkingStudents(@Param("datelimit") LocalDateTime datelimit);
 }
