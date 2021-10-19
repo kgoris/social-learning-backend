@@ -27,4 +27,7 @@ public class Questionnaire {
 
     @OneToMany(mappedBy = "questionnaire", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions;
+    
+    @OneToMany(mappedBy = "questionnaire", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LearningItem> learningItems;
 }

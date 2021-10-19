@@ -18,4 +18,5 @@ public class QuestionnaireDto  {
     private String code;
     private Integer questionCount;
     private List<QuestionDto> questions;
+    private List<LearningItemDto> learningItems;
 }
